@@ -1,0 +1,50 @@
+
+```{r}
+library(shiny)
+source("mtcars")
+rigtypes <- c("mpg", "cyl", "CrudeOil", "NaturalGas")
+shinyServer(
++     function(input, output) {
++         
++         
++         values <- reactiveValues()
++         values$rigtypes <- rigtypes
++         
++         
++         output$rigtypesControl <- renderUI({
++             checkboxGroupInput('rigtypes', 'Rig Types:'
++                                ,rigtypes 
++                                ,selected = values$rigtypes)
++         })
++         
++         
++         
++         dataTable <- reactive({
++             groupByDate(data, input$timeline[1], 
++                         input$timeline[2])
++         })
++         
++         dataTable2 <- reactive({
++             groupByDateAndRigType(flatdata, input$timeline[1], 
++                                   input$timeline[2],input$rigtypes )
++         })
++         
++         
++         output$dTable <- renderDataTable({
++             dataTable()
++         } 
++         )
++         
++         
++         output$RigsByYear <- renderChart({
++             plotRigCountByYear(dataTable())
++         })
++         
++         
++         output$RigsByYearAndRigType <- renderChart({
++             plotRigCountByYearAndRigType(dataTable2())
++         })
++         
++     })    
+# end of function(input, output)
+```
